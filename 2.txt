@@ -1,0 +1,62 @@
+[\u0100-\uffff]+
+
+logj：
+log4j.rootLogger=DEBUG,A1
+
+log4j.appender.A1=org.apache.log4j.ConsoleAppender
+log4j.appender.A1.layout=org.apache.log4j.PatternLayout
+log4j.appender.A1.layout.ConversionPattern=%-d{yyyy-MM-dd HH:mm:ss,SSS} [%t] [%c]-[%p] %m%n
+
+  <!-- 事务管理器 -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 数据源 -->
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    <!-- 通知 -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!-- 传播行为 -->
+            <tx:method name="save*" propagation="REQUIRED" />
+            <tx:method name="insert*" propagation="REQUIRED" />
+            <tx:method name="add*" propagation="REQUIRED" />
+            <tx:method name="create*" propagation="REQUIRED" />
+            <tx:method name="delete*" propagation="REQUIRED" />
+            <tx:method name="update*" propagation="REQUIRED" />
+            <tx:method name="find*" propagation="SUPPORTS" read-only="true" />
+            <tx:method name="select*" propagation="SUPPORTS" read-only="true" />
+            <tx:method name="get*" propagation="SUPPORTS" read-only="true" />
+        </tx:attributes>
+    </tx:advice>
+    <!-- 切面 -->
+    <aop:config>
+        <aop:advisor advice-ref="txAdvice"
+                     pointcut="execution(* cn.exrick.manager.service..*.*(..))" />
+    </aop:config>
+</beans>
+
+
+
+xml文件中的配置spring启动上下文环境:
+ <!-- 加载spring容器 -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:spring/applicationContext*.xml</param-value>
+    </context-param>
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+
+docker-machine -s "E:\docker" create --engine-registry-mirror=https://wz9k7gvj.mirror.aliyuncs.com -d virtualbox default
+
+
+elasticsearch-plugin install https://github.com/KennFalcon/elasticsearch-analysis-hanlp/releases/download/v7.3.2/elasticsearch-analysis-hanlp-7.3.2.zip
+
+
+elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/tag/v7.3.2/elasticsearch-analysis-ik-7.3.2.zip
+elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-pinyin/releases/download/v7.3.2/elasticsearch-analysis-pinyin-7.3.2.zip
+
+
+elasticsearch -E node.name=node1 -E cluster.name=geektime -E path.data=node1_data -E http.port=9201
+elasticsearch -E node.name=node2 -E cluster.name=geektime -E path.data=node2_data -E http.port=9202
